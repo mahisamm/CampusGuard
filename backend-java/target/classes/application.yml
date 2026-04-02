@@ -1,14 +1,14 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
     name: College Connect Backend
   datasource:
-    url: jdbc:h2:mem:college_connect;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
-    username: sa
-    password: 
-    driver-class-name: org.h2.Driver
+    url: ${DATABASE_URL:jdbc:h2:mem:college_connect;DB_CLOSE_DELAY=-1;MODE=PostgreSQL}
+    username: ${DATABASE_USERNAME:sa}
+    password: ${DATABASE_PASSWORD:}
+    driver-class-name: ${DATABASE_DRIVER:org.h2.Driver}
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,11 +16,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
 
 jwt:
-  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970 # Replace with secure secret
-  expiration: 86400000 # 1 day in ms
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970} # Replace with secure secret
+  expiration: ${JWT_EXPIRATION:86400000} # 1 day in ms
 
 cors:
-  allowed-origins: "http://localhost:5173,http://localhost:3000"
+  allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}

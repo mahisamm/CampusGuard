@@ -1,0 +1,48 @@
+services:
+  # 1. PostgreSQL Database
+  - type: database
+    name: college-connect-db
+    databaseName: college_connect
+    user: college_admin
+
+  # 2. Backend Web Service (Java Spring Boot)
+  - type: web
+    name: college-connect-api
+    runtime: docker
+    rootDir: backend-java
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: college-connect-db
+          property: connectionString
+      - key: DATABASE_USERNAME
+        fromDatabase:
+          name: college-connect-db
+          property: user
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: college-connect-db
+          property: password
+      - key: DATABASE_DRIVER
+        value: org.postgresql.Driver
+      - key: HIBERNATE_DIALECT
+        value: org.hibernate.dialect.PostgreSQLDialect
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: "*" # Initially allow all for ease of deployment, restrict later
+
+  # 3. Frontend Static Site (React/Vite)
+  - type: static
+    name: college-connect-ui
+    runtime: node
+    rootDir: .
+    buildCommand: pnpm install && pnpm run build --filter @workspace/lost-and-found
+    staticPublishPath: artifacts/lost-and-found/dist/public
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: college-connect-api
+          property: host
