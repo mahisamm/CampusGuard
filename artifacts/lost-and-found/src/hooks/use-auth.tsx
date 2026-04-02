@@ -28,6 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // We use the generated hook but don't fail hard if 401
   const { data: user, isLoading, error } = useGetCurrentUser({
     query: {
+      queryKey: ["getCurrentUser"],
       retry: false,
       refetchOnWindowFocus: false,
     }

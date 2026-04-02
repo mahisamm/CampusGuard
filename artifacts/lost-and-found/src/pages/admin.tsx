@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<"overview" | "items" | "transactions">("overview");
 
   const { data: stats, isLoading: statsLoading } = useAdminGetStats();
-  const { data: itemsData, isLoading: itemsLoading } = useAdminListItems({ limit: 50 });
+  const { data: itemsData, isLoading: itemsLoading } = useAdminListItems();
   const { data: txData, isLoading: txLoading } = useAdminListTransactions();
 
   const deleteMutation = useAdminDeleteItem({
