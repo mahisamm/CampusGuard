@@ -43,7 +43,7 @@ public class AuthController {
     private void setJwtCookie(HttpServletResponse response, String token) {
         Cookie cookie = new Cookie("jwtToken", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(false); // Should be true in prod with HTTPS
+        cookie.setSecure(true); // Enabled for Render HTTPS
         cookie.setPath("/");
         cookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(cookie);
