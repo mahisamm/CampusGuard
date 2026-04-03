@@ -9,7 +9,7 @@ services:
   - type: web
     name: college-connect-api
     runtime: docker
-    rootDir: backend-java
+    rootDir: backend
     plan: free
     envVars:
       - key: DATABASE_URL
@@ -40,7 +40,7 @@ services:
     runtime: node
     rootDir: .
     buildCommand: pnpm install && pnpm run build --filter @workspace/lost-and-found
-    staticPublishPath: artifacts/lost-and-found/dist/public
+    staticPublishPath: frontend/dist/public
     envVars:
       # This gives the frontend the full https:// URL of the API service
       - key: VITE_API_URL

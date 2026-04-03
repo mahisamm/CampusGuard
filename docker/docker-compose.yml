@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: campus-guard-db
+    environment:
+      POSTGRES_USER: college_admin
+      POSTGRES_PASSWORD: college_password
+      POSTGRES_DB: college_connect
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U college_admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - campus-network
+
+  # Spring Boot Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: campus-guard-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      DATABASE_URL: jdbc:postgresql://postgres:5432/college_connect
+      DATABASE_USERNAME: college_admin
+      DATABASE_PASSWORD: college_password
+      DATABASE_DRIVER: org.postgresql.Driver
+      HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      JWT_SECRET: ${JWT_SECRET:-your_dev_jwt_secret_key_min_32_chars_xxxxxxxxxxxxxxxxxxxxxxxx}
+      JWT_EXPIRATION: 86400000
+      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:3000,http://localhost:80
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - campus-network
+
+  # React Frontend (Optional - for testing)
+  # Uncomment to run frontend in Docker alongside backend
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: campus-guard-ui
+  #   depends_on:
+  #     - backend
+  #   ports:
+  #     - "3000:5173"
+  #   environment:
+  #     VITE_API_URL: http://localhost:8080
+  #   networks:
+  #     - campus-network
+
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  campus-network:
+    driver: bridge
