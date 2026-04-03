@@ -1,0 +1,43 @@
+# DOCKER QUICK REFERENCE
+
+## Start Services
+docker-compose -f docker/docker-compose.yml up          # Start in foreground
+docker-compose -f docker/docker-compose.yml up -d       # Start in background
+docker-compose -f docker/docker-compose.yml up --build  # Rebuild images first
+
+## Stop Services
+docker-compose -f docker/docker-compose.yml down        # Stop & remove containers
+docker-compose -f docker/docker-compose.yml stop        # Stop (keep containers)
+docker-compose -f docker/docker-compose.yml down -v     # Stop & remove volumes (DELETE DATA!)
+
+## View Logs
+docker-compose -f docker/docker-compose.yml logs -f                 # All services, follow
+docker-compose -f docker/docker-compose.yml logs -f backend         # Backend only
+docker-compose -f docker/docker-compose.yml logs -f postgres        # PostgreSQL only
+
+## Check Status
+docker-compose -f docker/docker-compose.yml ps          # Show service status
+
+## Connect to PostgreSQL
+docker exec -it campus-guard-db psql -U college_admin -d college_connect
+# List tables: \dt
+# Quit: \q
+
+## Test API
+curl http://localhost:8080/api/health                   # Health check
+curl http://localhost:8080/api/items                    # List items (no auth needed for GET in dev)
+
+## Clean Up
+docker system prune -a --volumes                        # Remove unused resources
+
+## Environment Variables
+# Edit docker/.env to customize JWT_SECRET, POSTGRES_PASSWORD, etc.
+
+## Development Flow
+# Terminal 1: Backend + Database
+cd docker && docker-compose up
+
+# Terminal 2: Frontend (hot reload)
+cd frontend && pnpm run dev
+
+# Access: http://localhost:5173

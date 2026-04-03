@@ -1,0 +1,23 @@
+{
+  "buildCommand": "pnpm install && pnpm run build --filter @workspace/lost-and-found",
+  "outputDirectory": "frontend/dist/public",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "devCommand": "pnpm run dev --filter @workspace/lost-and-found",
+  "env": {
+    "VITE_API_URL": {
+      "description": "Backend API URL (injected by Render)"
+    }
+  },
+  "functions": {
+    "api/**": {
+      "memory": 128,
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/:path*",
+      "destination": "/index.html"
+    }
+  ]
+}

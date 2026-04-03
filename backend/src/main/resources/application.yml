@@ -1,0 +1,36 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: College Connect Backend
+  datasource:
+    # PostgreSQL: jdbc:postgresql://host:port/database
+    # H2 Local Dev: jdbc:h2:mem:college_connect;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    # Docker: jdbc:postgresql://postgres:5432/college_connect
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/college_connect}
+    username: ${DATABASE_USERNAME:college_admin}
+    password: ${DATABASE_PASSWORD:college_password}
+    # H2: org.h2.Driver | PostgreSQL: org.postgresql.Driver
+    driver-class-name: ${DATABASE_DRIVER:org.postgresql.Driver}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        # H2: org.hibernate.dialect.H2Dialect | PostgreSQL: org.hibernate.dialect.PostgreSQLDialect
+        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
+
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970} # Replace with secure secret
+  expiration: ${JWT_EXPIRATION:86400000} # 1 day in ms
+
+cors:
+  # CORS allowed origins (comma-separated)
+  # Dev: http://localhost:5173,http://localhost:3000
+  # Docker: http://localhost:5173,http://localhost:3000,http://localhost:80
+  # Production Vercel: https://your-domain.vercel.app
+  # College Project (Allow All): *
+  allowed-origins: ${ALLOWED_ORIGINS:*}

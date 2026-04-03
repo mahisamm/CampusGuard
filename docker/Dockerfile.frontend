@@ -1,0 +1,38 @@
+# Frontend Dockerfile for Docker Compose / Production
+
+# Stage 1: Build
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy root workspace files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copy frontend and lib packages
+COPY frontend ./frontend
+COPY backend/lib/api-client-react ./frontend/lib/api-client-react
+COPY backend/lib/api-zod ./frontend/lib/api-zod
+COPY backend/lib/integrations-openai-ai-react ./frontend/lib/integrations-openai-ai-react
+COPY scripts ./scripts
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Build frontend only
+RUN pnpm run build --filter @workspace/lost-and-found
+
+# Stage 2: Runtime (Nginx)
+FROM nginx:alpine
+
+# Copy built assets
+COPY --from=build /app/frontend/dist/public /usr/share/nginx/html
+
+# Copy nginx config for SPA routing
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
